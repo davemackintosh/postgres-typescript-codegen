@@ -9,10 +9,18 @@ export function columnToTSSyntaxKindMap({
 		case "text":
 		case "citext":
 		case "uuid":
+		case "timestamp":
+		case "timestamptz":
 			return ts.SyntaxKind.StringKeyword
 		case "bool":
 			return ts.SyntaxKind.BooleanKeyword
+		case "int":
+		case "int2":
+		case "int4":
+			return ts.SyntaxKind.NumberKeyword
 		default:
-			return ts.SyntaxKind.UnknownKeyword
+			throw new ReferenceError(
+				"No way to convert this type. Received '" + udt_name + "'",
+			)
 	}
 }

@@ -6,6 +6,9 @@ export type UDTName =
 	| "citext"
 	| "timestamp"
 	| "timestamptz"
+	| "int"
+	| "int2"
+	| "int4"
 
 /**
  * We gather information about the tables in your schemas to generate
