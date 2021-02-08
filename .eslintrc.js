@@ -13,4 +13,14 @@ module.exports = {
 	rules: {
 		"prettier/prettier": "error",
 	},
+	overrides: [
+		{
+			files: ["tests/*"],
+			globals: {
+				describe: true,
+				it: true,
+				expect: true,
+			},
+		},
+	],
 }
