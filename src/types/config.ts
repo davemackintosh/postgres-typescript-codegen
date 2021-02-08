@@ -1,6 +1,7 @@
 export interface Config {
 	db: {
 		connectionString: string
+		schemas?: string[]
 	}
-	schemas: string[]
+	outDir: string
 }

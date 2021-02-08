@@ -12,7 +12,7 @@ import { Config } from "./types/config"
 const OUTDIR = "./src/generated"
 
 async function main(configPath: string) {
-	const config: Config = require(configPath)
+	const config: Config = require(configPath).default
 	// Connect to the database.
 	connect(config.db.connectionString)
 

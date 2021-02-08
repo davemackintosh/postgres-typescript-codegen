@@ -9,6 +9,8 @@ export function columnToTSSyntaxKindMap({
 		case "text":
 		case "citext":
 		case "uuid":
+		case "date":
+		case "tsvector":
 		case "timestamp":
 		case "timestamptz":
 			return ts.SyntaxKind.StringKeyword
