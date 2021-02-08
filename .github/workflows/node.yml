@@ -1,8 +1,8 @@
-name: PostgreSQL Service Example
+name: Tests
 on: push
 
 env:
- CONNECTION_STRING: postgres://postgres:postgres@localhost:5432/dvdrental
+ CONNECTION_STRING: postgres://postgres:postgres@localhost/dvdrental
 
 jobs:
   runner-job:
@@ -12,21 +12,19 @@ jobs:
       postgres:
         image: postgres
         env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: dvdrental
           POSTGRES_PASSWORD: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --name postgres
         ports:
           - 5432:5432
 
     steps:
-      - name: Install PostgreSQL client
-        run: |
-          sudo apt-get -yqq install postgresql-client
-          sudo systemctl start postgresql
-
       - name: Check out repository code
         uses: actions/checkout@v2
 
@@ -46,11 +44,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Restore test database
-        run: |
-          createdb postgres://postgres:postgres@localhost:5432/dvdrental
-          pg_restore -c -U postgres -d $CONNECTION_STRING ./tests/dvdrental.tar
+        run: pg_restore -d $CONNECTION_STRING ./tests/dvdrental.tar
 
-      - name: Connect to PostgreSQL
+      - name: Run tests
         run: yarn test
-        env:
-          CONNECTION_STRING: $CONNECTION_STRING
