@@ -46,5 +46,8 @@ jobs:
       - name: Restore test database
         run: pg_restore -d $CONNECTION_STRING ./tests/dvdrental.tar
 
-      - name: Run tests
-        run: yarn test
+      - uses: ziishaned/jest-reporter-action@v0.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          test-command: "yarn test"
+
