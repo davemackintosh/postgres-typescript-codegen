@@ -1,22 +1,9 @@
-import { pgPool } from "./db-ops"
-import pg from "pg"
 import { DB } from "./types/db"
+import { SQLPartialValue, Query } from "./query"
 
-export async function select<Datum extends DB.Table>(
+export function sql<Datum extends DB.Table>(
 	strings: TemplateStringsArray,
-	...[cols, name, ...values]: [
-		(keyof Datum["shape"])[] | "*",
-		Datum["name"],
-		Datum["shape"][],
-	]
-): Promise<pg.QueryResult<Datum["shape"]>> {
-	for (const word of strings) {
-		console.log(word)
-	}
-
-	if (!pgPool) throw new ReferenceError("No PG connection!")
-
-	const query = pgPool?.query<Datum["shape"]>("")
-
-	return query
+	...interpolations: SQLPartialValue<Datum>[]
+): Query<Datum> {
+	return new Query<Datum>([...strings], interpolations)
 }
