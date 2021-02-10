@@ -1,4 +1,5 @@
 import pg from "pg"
+import { Config } from "types/config"
 import {
 	TableDescription,
 	TableMeta,
@@ -10,9 +11,11 @@ type SchemaDict = Record<string, TableDict>
 
 export let pgPool: pg.Pool | null = null
 
-export function connect(connectionString: string) {
+export function connect(connectionString?: string) {
+	const config: Config = require(process.argv[2]).default
+
 	pgPool = new pg.Pool({
-		connectionString,
+		connectionString: connectionString ?? config.db.connectionString,
 	})
 }
 

@@ -1,19 +1,22 @@
+import { pgPool } from "./db-ops"
 import pg from "pg"
-import { DB } from "../src/types/db"
+import { DB } from "./types/db"
 
-export function sql<Datum extends DB.SQL>(
+export async function select<Datum extends DB.Table>(
 	strings: TemplateStringsArray,
-	...values: [
-		(keyof Datum["columns"])[] | "*",
+	...[cols, name, ...values]: [
+		(keyof Datum["shape"])[] | "*",
 		Datum["name"],
-		...Datum["columns"][]
+		Datum["shape"][],
 	]
-): pg.Query<Datum["columns"]> {
+): Promise<pg.QueryResult<Datum["shape"]>> {
 	for (const word of strings) {
 		console.log(word)
 	}
 
-	const query = new pg.Query<Datum["columns"]>("")
+	if (!pgPool) throw new ReferenceError("No PG connection!")
+
+	const query = pgPool?.query<Datum["shape"]>("")
 
 	return query
 }
