@@ -14,9 +14,11 @@ export interface Store extends DB.Table {
 
 describe("SQL strings are type safe with models", () => {
 	it("Should compile with known safe values", () => {
-		sql<Store>`SELECT ${"*"} FROM ${"store"} WHERE ${{
+		const query = sql<
+			DB.Op.Select,
+			Store
+		>`SELECT ${"*"} FROM ${"store"} WHERE ${{
 			name: "farts",
-			nope: 1,
-		}} OR ${{ narp: 3 }}`
+		}}`
 	})
 })

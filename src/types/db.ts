@@ -4,6 +4,13 @@ export module DB {
 		shape: Record<string, unknown>
 	}
 
+	export enum Op {
+		Insert,
+		Select,
+		Update,
+		Delete,
+	}
+
 	/**
 	 * In the generated code, this is actually a module
 	 * but this file exists to please the TypeScript overlords
