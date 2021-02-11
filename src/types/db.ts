@@ -5,10 +5,10 @@ export module DB {
 	}
 
 	export enum Op {
-		Insert,
-		Select,
-		Update,
-		Delete,
+		Insert = "insert",
+		Select = "select",
+		Update = "update",
+		Delete = "delete",
 	}
 
 	/**
