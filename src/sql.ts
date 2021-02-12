@@ -7,6 +7,7 @@ export type SQLPartialValue<T extends DB.Table> =
 	| "*"
 	| T["name"]
 	| T["shape"]
+	| SQLPartialValue<T>[]
 
 type SelectQueryType<T extends DB.Table> = [
 	(keyof T["shape"])[] | "*",
@@ -49,13 +50,13 @@ function parseValue<T>(value: SQLPartialValue<T extends DB.Table>) {
  * @param strings that are static.
  * @param interpolations that are values.
  */
-export async function sql<
+export function sql<
 	Op extends keyof QueryTypeValues<Datum>,
 	Datum extends DB.Table
 >(
 	strings: TemplateStringsArray,
 	...interpolations: QueryTypeValues<Datum>[Op]
-): Promise<pg.QueryResult<Datum["shape"]>> {
+): [string, Datum["shape"][]] {
 	if (!pgPool) throw new ReferenceError("No PG connection!")
 
 	let queryString = strings[0]
@@ -68,5 +69,5 @@ export async function sql<
 
 	console.log(queryString)
 
-	return pgPool.query<Datum["shape"]>(queryString, values)
+	return [queryString, values]
 }

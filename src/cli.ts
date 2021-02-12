@@ -1,4 +1,5 @@
 import { writeFileSync } from "fs"
+import { resolve } from "path"
 import ts from "typescript"
 import mkdirp from "mkdirp"
 import { schemaToModuleWithBody, tableToInterface } from "./ast"
@@ -7,12 +8,13 @@ import {
 	convertTableMetaCatalogsToTableDict,
 	getTableMetaCatalog,
 	connect,
+	getDatabaseUserTypes,
 } from "./db-ops"
 import { Config } from "./types/config"
 const OUTDIR = "./src/generated"
 
 async function main(configPath: string) {
-	const config: Config = require(configPath).default
+	const config: Config = require(resolve(process.cwd(), configPath)).default
 	// Connect to the database.
 	connect(config.db.connectionString)
 
@@ -30,6 +32,8 @@ async function main(configPath: string) {
 	)
 
 	const printer = ts.createPrinter()
+	const userTypes = await getDatabaseUserTypes(["public", "private"])
+	console.log(userTypes)
 
 	const tablesRaw = await getTableMetaCatalog(["public", "private", "unknown"])
 	const tables = convertTableMetaCatalogsToTableDict(tablesRaw)

@@ -41,3 +41,15 @@ export interface TableDescription
 	> {
 	columns: TableMeta[]
 }
+
+export interface UserType {
+	schema: string
+	name: string
+	internal_name: string
+	size: number
+	elements?: string[]
+	description?: string
+	isEnum?: boolean
+}
+
+export type UserTypes = UserType[]

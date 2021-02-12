@@ -13,6 +13,7 @@ export function columnToTSSyntaxKindMap({
 		case "tsvector":
 		case "timestamp":
 		case "timestamptz":
+		default:
 			return ts.SyntaxKind.StringKeyword
 		case "bool":
 			return ts.SyntaxKind.BooleanKeyword
@@ -20,9 +21,5 @@ export function columnToTSSyntaxKindMap({
 		case "int2":
 		case "int4":
 			return ts.SyntaxKind.NumberKeyword
-		default:
-			throw new ReferenceError(
-				"No way to convert this type. Received '" + udt_name + "'",
-			)
 	}
 }

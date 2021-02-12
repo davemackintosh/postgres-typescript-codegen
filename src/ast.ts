@@ -1,5 +1,5 @@
 import ts, { factory } from "typescript"
-import { TableDescription } from "./types/table-meta"
+import { TableDescription, UserType, UserTypes } from "./types/table-meta"
 import { columnToTSSyntaxKindMap } from "./udt-map"
 
 const snakeToPascal = (name: string): string =>
@@ -9,6 +9,19 @@ const snakeToPascal = (name: string): string =>
 
 const commentize = (contents: string): string =>
 	`*\n * ${contents.replace(/\n/g, "\n * ")}\n `
+
+export function userTypesToInterfaces(userType: UserType) {
+	let interfaceDecl = factory.createTypeAliasDeclaration(
+		[],
+		factory.createModifiersFromModifierFlags(ts.ModifierFlags.Export),
+		factory.createIdentifier(userType.name),
+		[],
+		userType.isEnum && Array.isArray(userType.elements)
+			? factory.createIntersectionTypeNode(userType.elements.map(value => value)
+			: factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+	)
+	return interfaceDecl
+}
 
 export function schemaToModuleWithBody(
 	schemaName: string,
@@ -34,13 +47,19 @@ export function tableToInterface(table: TableDescription): ts.Statement {
 		[],
 		[],
 		table.columns.map((column) => {
+			const columnType = factory.createKeywordTypeNode(
+				columnToTSSyntaxKindMap(column),
+			)
 			const typeValue = column.foreign_table
-				? factory.createTypeReferenceNode(
-						`${snakeToPascal(column.table_schema)}.${snakeToPascal(
-							column.foreign_table,
-						)}`,
-				  )
-				: factory.createKeywordTypeNode(columnToTSSyntaxKindMap(column))
+				? factory.createUnionTypeNode([
+						columnType,
+						factory.createTypeReferenceNode(
+							`${snakeToPascal(column.table_schema)}.${snakeToPascal(
+								column.foreign_table,
+							)}`,
+						),
+				  ])
+				: columnType
 
 			let node = factory.createPropertySignature(
 				[],

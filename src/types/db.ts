@@ -1,5 +1,6 @@
 export module DB {
 	export interface Table {
+		schema: string
 		name: string
 		shape: Record<string, unknown>
 	}

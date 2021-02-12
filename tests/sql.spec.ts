@@ -1,17 +1,22 @@
 import { DB } from "../src/types/db"
 import { sql } from "../src/sql"
-import ts from "typescript"
 import { connect, disconnect } from "../src/db-ops"
 import { Config } from "types/config"
 
+export interface Address extends DB.Table {
+	name: "address"
+	schema: "public"
+	shape: {
+		address: string
+		district?: string
+	}
+}
+
 export interface Store extends DB.Table {
 	name: "store"
+	schema: "public"
 	shape: {
-		name: string
-		location?: {
-			lat: number
-			long: number
-		}
+		address_id?: string | Address["shape"]
 	}
 }
 
@@ -23,12 +28,14 @@ afterAll(() => disconnect())
 
 describe("SQL strings are type safe with models and operations.", () => {
 	it("Should compile with known safe values", async () => {
-		const { rows } = await sql<DB.Op.Select, Store>`SELECT ${[
-			"location",
-			"name",
-		]} FROM ${"store"} WHERE ${{
-			name: "farts",
-		}} OR ${{ name: "Poops" }}`
+		const query = await sql<
+			DB.Op.Select,
+			Store
+		>`SELECT ${"*"} FROM ${"store"} WHERE ${{
+			address_id: sql<DB.Op.Select, Address>`SELECT ${[
+				"address_id",
+			]} FROM ${"address"}`,
+		}}`
 
 		console.log(rows)
 	})
